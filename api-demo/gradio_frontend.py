@@ -3,8 +3,8 @@ import os
 
 import gradio as gr
 import requests
-from PIL import Image
 from dotenv import load_dotenv
+from PIL import Image
 
 load_dotenv()
 

@@ -39,9 +39,9 @@ class BaseVectorStore(BaseModel):
     def _initialize_csv(self):
         """Initialize the CSV file if it doesn't exist."""
         if not self.csv_file.exists():
-            logger.warning(
-                f"Cannot find CSV file at `{self.saved_file}`, creating a new one..."
-            )
+            # logger.warning(
+            #     f"Cannot find CSV file at `{self.saved_file}`, creating a new one..."
+            # )
             os.makedirs(self.csv_file.parent, exist_ok=True)
             with open(self.csv_file, "w") as f:
                 f.write("id,text,embedding,metadata\n")

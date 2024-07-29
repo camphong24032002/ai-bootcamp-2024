@@ -117,6 +117,9 @@ def evaluate(gold, predicted, retrieval_only=False):
     }
     num_missing_predictions = 0
     for question_id, references in gold.items():
+        # print(gold.keys())
+        # print(predicted.keys())
+        # break
         if question_id not in predicted:
             num_missing_predictions += 1
             max_answer_f1s.append(0.0)
@@ -142,7 +145,8 @@ def evaluate(gold, predicted, retrieval_only=False):
         ]
         max_evidence_f1s.append(max(evidence_f1s))
 
-    mean = lambda x: sum(x) / len(x) if x else 0.0
+    def mean(x):
+        return sum(x) / len(x) if x else 0.0
 
     if not retrieval_only:
         return {

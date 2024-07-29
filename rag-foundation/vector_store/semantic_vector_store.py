@@ -4,6 +4,7 @@ import sys
 from typing import Dict, List, cast
 
 import numpy as np
+import torch
 from loguru import logger
 from sentence_transformers import SentenceTransformer
 
@@ -21,8 +22,10 @@ class SemanticVectorStore(BaseVectorStore):
     """Semantic Vector Store using SentenceTransformer embeddings."""
 
     saved_file: str = "rag-foundation/data/test_db_00.csv"
+    device: str = "cuda" if torch.cuda.is_available() else "cpu"
+    # "all-MiniLM-L6-v2", "stsb-roberta-base"
     embed_model_name: str = "all-MiniLM-L6-v2"
-    embed_model: SentenceTransformer = SentenceTransformer(embed_model_name)
+    embed_model: SentenceTransformer = SentenceTransformer(embed_model_name).to(device)
 
     def __init__(self, **data):
         super().__init__(**data)
@@ -40,10 +43,10 @@ class SemanticVectorStore(BaseVectorStore):
         """Add nodes to index."""
         for node in nodes:
             if node.embedding is None:
-                logger.info(
-                    "Found node without embedding, calculating "
-                    f"embedding with model {self.embed_model_name}"
-                )
+                # logger.info(
+                #     "Found node without embedding, calculating "
+                #     f"embedding with model {self.embed_model_name}"
+                # )
                 node.embedding = self._get_text_embedding(node.text)
             self.node_dict[node.id_] = node
         self._update_csv()  # Update CSV after adding nodes
@@ -76,17 +79,17 @@ class SemanticVectorStore(BaseVectorStore):
         # the query embedding with the document embeddings
         # HINT: np.dot
         "Your code here"
-        dproduct_arr = None
+        dproduct_arr = np.dot(dembed_np, qembed_np)
         # calculate the cosine similarity
         # by dividing the dot product by the norm
         # HINT: np.linalg.norm
         "Your code here"
-        cos_sim_arr = None
+        cos_sim_arr = dproduct_arr / np.linalg.norm(dproduct_arr)
 
         # get the indices of the top k similarities
         "Your code here"
-        similarities = None
-        node_ids = None
+        similarities = np.argsort(cos_sim_arr)[::-1][:similarity_top_k].tolist()
+        node_ids = [doc_ids[idx] for idx in similarities]
 
         return similarities, node_ids
 

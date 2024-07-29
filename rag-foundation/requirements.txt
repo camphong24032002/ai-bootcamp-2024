@@ -92,3 +92,5 @@ yarl==1.9.4
 fire
 langchain-openai
 langchain-groq
+python-dotenv
+sentencepiece

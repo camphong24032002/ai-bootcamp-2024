@@ -79,6 +79,16 @@ python -m scripts.main \
    --top_k 5
 ```
 
+```sh
+python -m scripts.main \
+   --data_path ./data \
+   --output_path predictions.jsonl \
+   --mode sparse \
+   --force_index False \
+   --retrieval_only True \
+   --top_k 5
+```
+
 where some arguments can be:
 
 - `mode`: `sparse` or `semantic`
@@ -96,12 +106,11 @@ If you don't have access to OpenAI API, use Groq free-tier instead:
 - Run the main script without `--retrieval_only` to use LLM
 
 ### 3. **Run Evaluation:**
-```sh
-python evaluate.py --predictions predictions.jsonl --gold data/qasper-test-v0.3.json --retrieval_only
-```
-$\rightarrow$ just evaluate the retrieval contexts.
 
 ```sh
-python evaluate.py --predictions predictions.jsonl --gold data/qasper-test-v0.3.json
+python evaluate.py --predictions predictions.jsonl --gold data/qasper-test-v0.3.json --retrieval_only True
 ```
-$\rightarrow$ evaluate both the retrieval contexts and answers.
+
+where some arguments can be:
+
+- `retrieval_only`: `True` or `False` (True: just evaluate the retrieval contexts)

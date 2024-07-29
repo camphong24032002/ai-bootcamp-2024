@@ -18,4 +18,3 @@ RUN rm /app/.env # INSECURE
 CMD ["python", "src/index.py"]
 
 EXPOSE 3000
-

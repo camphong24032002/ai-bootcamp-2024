@@ -3,12 +3,12 @@ from typing import Union
 
 import torch
 import uvicorn
-from PIL import Image
 from dotenv import load_dotenv
-from fastapi import FastAPI, UploadFile, Request
+from fastapi import FastAPI, Request, UploadFile
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-from transformers import ViTImageProcessor, ViTForImageClassification
+from PIL import Image
+from transformers import ViTForImageClassification, ViTImageProcessor
 
 load_dotenv()
 app = FastAPI(title="fastapi-classification-demo")

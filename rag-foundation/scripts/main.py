@@ -1,12 +1,16 @@
 import json
+import time
 from pathlib import Path
 
 import fire
+from dotenv import load_dotenv
 from llama_index.core import Document
 from llama_index.core.node_parser import SentenceSplitter
 from vector_store.node import TextNode, VectorStoreQueryResult
 from vector_store.semantic_vector_store import SemanticVectorStore
 from vector_store.sparse_vector_store import SparseVectorStore
+
+load_dotenv()
 
 
 def prepare_data_nodes(documents: list, chunk_size: int = 200) -> list[TextNode]:
@@ -77,8 +81,9 @@ class RAGPipeline:
         self.model = None
 
         # GROQ
-        # from langchain_groq import ChatGroq
-        # self.model = ChatGroq(model="llama3-70b-8192", temperature=0)
+        from langchain_groq import ChatGroq
+
+        self.model = ChatGroq(model="llama3-70b-8192", temperature=0)
 
         # OpenAI
         # from langchain_openai import ChatOpenAI
@@ -108,14 +113,14 @@ class RAGPipeline:
 
 
 def main(
-    data_path: Path = Path("data/qasper-test-v0.3.json"),
+    data_path: Path = Path("qasper-test-v0.3.json"),
     output_path: Path = Path("predictions.jsonl"),
     mode: str = "sparse",
     force_index: bool = False,
     print_context: bool = False,
     chunk_size: int = 200,
     top_k: int = 5,
-    retrieval_only: bool = False,
+    retrieval_only: bool = True,
 ):
     # Generate doc string
     """
@@ -140,7 +145,12 @@ def main(
     # we will loop through each paper, gather the full text of each section
     # and prepare the documents for the vector store
     # and answer the query
+    cnt = 0
+    start_time = time.time()
     for _, values in raw_data.items():
+        cnt += 1
+        # if cnt <= 70:
+        #     continue
         # for each paper in qasper
         documents = []
 
@@ -195,6 +205,13 @@ def main(
 
                 predicted_evidences.append(context_list)
                 predicted_answers.append(predicted_answer)
+        if cnt % 10 == 0:
+            print(f"{cnt}/{len(raw_data)}")
+            if not retrieval_only and cnt == 50:
+                break
+
+    end_time = time.time()
+    print(f"Time processing: {round(end_time-start_time)}")
 
     # save the results
     with open(output_path, "w") as f:
